@@ -14,9 +14,22 @@ class CatalogPage extends StatelessWidget {
       price: Decimal.parse('111.11'),
     );
 
-    return ListView.builder(
-      itemBuilder: (_, index) => ProductCard(product: product),
-      itemCount: 5,
+    return CustomScrollView(
+      slivers: [
+        const SliverAppBar(
+          expandedHeight: 200,
+          flexibleSpace: FlexibleSpaceBar(
+            centerTitle: true,
+            title: Text('Каталог', style: TextStyle(color: Colors.black)),
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (_, index) => ProductCard(product: product),
+            childCount: 5,
+          ),
+        )
+      ],
     );
   }
 }

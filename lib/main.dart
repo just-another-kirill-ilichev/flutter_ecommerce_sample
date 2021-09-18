@@ -18,6 +18,10 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
+          appBarTheme: AppBarTheme(
+            centerTitle: true,
+            backgroundColor: ThemeData.light().scaffoldBackgroundColor,
+          ),
         ),
         home: const NavigationWrapper(index: 0),
       ),

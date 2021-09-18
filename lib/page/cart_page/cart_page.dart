@@ -9,16 +9,26 @@ class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CartBloc, CartState>(
-      builder: (_, state) {
-        return ListView.builder(
-          itemBuilder: (_, idx) => ListTile(
-            title: Text(state.items[idx].product.title),
-            trailing: Text(state.items[idx].amount.toString()),
+      builder: (_, state) => CustomScrollView(
+        slivers: [
+          const SliverAppBar(
+            expandedHeight: 200,
+            flexibleSpace: FlexibleSpaceBar(
+              centerTitle: true,
+              title: Text('Корзина', style: TextStyle(color: Colors.black)),
+            ),
           ),
-          itemCount: state.items.length,
-        );
-        // return const Center(child: Text('Корзина'));
-      },
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (_, idx) => ListTile(
+                title: Text(state.items[idx].product.title),
+                trailing: Text(state.items[idx].amount.toString()),
+              ),
+              childCount: state.items.length,
+            ),
+          )
+        ],
+      ),
     );
   }
 }
