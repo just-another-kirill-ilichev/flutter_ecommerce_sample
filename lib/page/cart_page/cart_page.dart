@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
+import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_state.dart';
 
 class CartPage extends StatelessWidget {
@@ -11,12 +12,18 @@ class CartPage extends StatelessWidget {
     return BlocBuilder<CartBloc, CartState>(
       builder: (_, state) => CustomScrollView(
         slivers: [
-          const SliverAppBar(
+          SliverAppBar(
             expandedHeight: 200,
-            flexibleSpace: FlexibleSpaceBar(
+            flexibleSpace: const FlexibleSpaceBar(
               centerTitle: true,
               title: Text('Корзина', style: TextStyle(color: Colors.black)),
             ),
+            actions: [
+              IconButton(
+                onPressed: () => _onClearPressed(context),
+                icon: const Icon(Icons.delete),
+              ),
+            ],
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
@@ -30,5 +37,12 @@ class CartPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _onClearPressed(BuildContext context) {
+    var bloc = BlocProvider.of<CartBloc>(context, listen: false);
+    var event = ClearCartEvent();
+
+    bloc.add(event);
   }
 }
