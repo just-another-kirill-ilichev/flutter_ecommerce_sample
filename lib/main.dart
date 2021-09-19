@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
+import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_bloc.dart';
 import 'package:flutter_ecommerce_sample/widget/navigation_wrapper.dart';
 
 void main() {
@@ -12,8 +13,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<CartBloc>(
-      create: (_) => CartBloc.initial(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<CartBloc>(create: (_) => CartBloc.initial()),
+        BlocProvider<ProductsBloc>(create: (_) => ProductsBloc.initial()),
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
