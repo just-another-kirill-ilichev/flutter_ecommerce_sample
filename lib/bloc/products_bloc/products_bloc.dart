@@ -1,11 +1,22 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
-import 'package:decimal/decimal.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_state.dart';
 import 'package:flutter_ecommerce_sample/domain/model/product.dart';
+import 'package:flutter_ecommerce_sample/domain/repository/firebase_repository.dart';
+import 'package:flutter_ecommerce_sample/domain/repository/document_serializer.dart';
 
 class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
-  ProductsBloc(ProductsState initialState) : super(initialState);
+  late FirebaseRepository<Product> _repository;
+  StreamSubscription? _productsSubscription;
+
+  ProductsBloc(ProductsState initialState) : super(initialState) {
+    _repository = FirebaseRepository(
+      '/products',
+      DocumentSerializer((id, data) => Product.fromMap(id, data)),
+    );
+  }
 
   factory ProductsBloc.initial() {
     return ProductsBloc(ProductsState(false, []))..add(LoadProductsEvent());
@@ -14,19 +25,13 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   @override
   Stream<ProductsState> mapEventToState(ProductsEvent event) async* {
     if (event is LoadProductsEvent) {
-      // TODO Load events form firestore
-
-      await Future.delayed(const Duration(seconds: 2));
-
-      var product = Product(
-        title: 'title',
-        description: 'description',
-        price: Decimal.parse('111.11'),
-      );
-
-      var products = List.filled(10, product);
-
-      yield ProductsState(true, products);
+      _productsSubscription?.cancel();
+      _productsSubscription = _repository
+          .getStreamAll()
+          .listen((products) => add(UpdateProductsEvent(products)));
+    }
+    if (event is UpdateProductsEvent) {
+      yield ProductsState(true, event.products);
     }
   }
 }

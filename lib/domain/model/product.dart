@@ -1,34 +1,33 @@
-import 'dart:convert';
-
 import 'package:decimal/decimal.dart';
+import 'package:flutter_ecommerce_sample/domain/model/entity.dart';
 
-class Product {
-  final int? id;
+class Product extends Entity<String> {
   final String title;
   final String description;
   final Decimal price;
 
-  Product({
-    this.id,
+  Product(
+    String? id, {
     required this.title,
     required this.description,
     required this.price,
-  });
+  }) : super(id);
 
   Product copyWith({
-    int? id,
+    String? id,
     String? title,
     String? description,
     Decimal? price,
   }) {
     return Product(
-      id: id ?? this.id,
+      id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
       price: price ?? this.price,
     );
   }
 
+  @override
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -38,38 +37,12 @@ class Product {
     };
   }
 
-  factory Product.fromMap(Map<String, dynamic> map) {
+  factory Product.fromMap(String id, Map<String, dynamic> map) {
     return Product(
-      id: map['id'],
+      id,
       title: map['title'],
       description: map['description'],
       price: Decimal.parse(map['price']),
     );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory Product.fromJson(String source) =>
-      Product.fromMap(json.decode(source));
-
-  @override
-  String toString() {
-    return 'Product(id: $id, title: $title, description: $description, price: $price)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Product &&
-        other.id == id &&
-        other.title == title &&
-        other.description == description &&
-        other.price == price;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^ title.hashCode ^ description.hashCode ^ price.hashCode;
   }
 }
