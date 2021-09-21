@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_bloc.dart';
+import 'package:flutter_ecommerce_sample/page/error_page/error_page.dart';
+import 'package:flutter_ecommerce_sample/page/loading_page/loading_page.dart';
 import 'package:flutter_ecommerce_sample/widget/navigation_wrapper.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(MyApp());
+  runApp(App());
 }
 
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
   final Future<FirebaseApp> _initializeFirebase = Firebase.initializeApp();
 
-  MyApp({Key? key}) : super(key: key);
+  App({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +25,16 @@ class MyApp extends StatelessWidget {
       ]),
       builder: (_, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildLoading();
+          return const MaterialApp(home: LoadingPage());
         }
 
         if (snapshot.hasError) {
-          return _buildLoading(); // TODO
+          return const MaterialApp(
+            home: ErrorPage(
+              // TODO: Text localization
+              errorText: 'Произошла ошибка при инициализации приложения',
+            ),
+          );
         }
 
         return _buildApp();
@@ -52,15 +59,6 @@ class MyApp extends StatelessWidget {
           ),
         ),
         home: const NavigationWrapper(index: 0),
-      ),
-    );
-  }
-
-  Widget _buildLoading() {
-    // TODO
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(child: CircularProgressIndicator()),
       ),
     );
   }
