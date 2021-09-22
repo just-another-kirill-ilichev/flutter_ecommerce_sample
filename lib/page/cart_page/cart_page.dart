@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_state.dart';
+import 'package:flutter_ecommerce_sample/widget/product_card.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -27,10 +28,7 @@ class CartPage extends StatelessWidget {
           ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (_, idx) => ListTile(
-                title: Text(state.items[idx].product.title),
-                trailing: Text(state.items[idx].amount.toString()),
-              ),
+              (_, idx) => ProductCard(product: state.items[idx].product),
               childCount: state.items.length,
             ),
           )

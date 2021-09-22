@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_state.dart';
-import 'package:flutter_ecommerce_sample/page/catalog_page/product_card.dart';
+import 'package:flutter_ecommerce_sample/widget/product_card.dart';
 
 class CatalogPage extends StatelessWidget {
   const CatalogPage({Key? key}) : super(key: key);
