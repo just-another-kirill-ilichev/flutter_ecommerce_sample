@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_bloc.dart';
 import 'package:flutter_ecommerce_sample/config/app_router.dart';
+import 'package:flutter_ecommerce_sample/config/app_theme.dart';
 import 'package:flutter_ecommerce_sample/widget/navigation_wrapper.dart';
 
 void main() {
@@ -17,14 +18,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        appBarTheme: AppBarTheme(
-          centerTitle: true,
-          foregroundColor: Colors.black,
-          backgroundColor: ThemeData.light().scaffoldBackgroundColor,
-        ),
-      ),
+      theme: appTheme,
       onGenerateRoute: AppRouter.onGenerateRoute,
       initialRoute: AppRouter.startup,
     );
