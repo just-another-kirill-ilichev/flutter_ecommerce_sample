@@ -48,3 +48,4 @@ app.*.map.json
 # Firebase stuff
 google-services.json
 GoogleService-Info.plist
+Info.plist
