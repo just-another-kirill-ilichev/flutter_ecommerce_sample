@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_sample/page/account_page/account_page.dart';
 import 'package:flutter_ecommerce_sample/page/cart_page/cart_page.dart';
 import 'package:flutter_ecommerce_sample/page/catalog_page/catalog_page.dart';
 import 'package:flutter_ecommerce_sample/widget/animated_indexed_stack.dart';
@@ -36,6 +37,7 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
         children: const [
           CatalogPage(),
           CartPage(),
+          AccountPage(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -49,6 +51,10 @@ class _NavigationWrapperState extends State<NavigationWrapper> {
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_bag_outlined),
             label: 'Корзина',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_outlined),
+            label: 'Аккаунт',
           ),
         ],
       ),
