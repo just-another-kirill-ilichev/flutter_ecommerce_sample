@@ -22,20 +22,20 @@ class FirebaseRepository<T extends Entity<String>>
   }
 
   @override
-  Future<List<T?>> fetchAll() async =>
+  Future<List<T>> fetchAll() async =>
       serializer.deserializeMany((await _collectionReference.get()).docs);
 
   @override
-  Future<T?> fetchById(String id) async =>
+  Future<T> fetchById(String id) async =>
       serializer.deserialize(await _collectionReference.doc(id).get());
 
   @override
-  Stream<List<T?>> getStreamAll() => _collectionReference
+  Stream<List<T>> getStreamAll() => _collectionReference
       .snapshots()
       .map((snapshot) => serializer.deserializeMany(snapshot.docs));
 
   @override
-  Stream<T?> getStreamById(String id) => _collectionReference
+  Stream<T> getStreamById(String id) => _collectionReference
       .doc(id)
       .snapshots()
       .map((doc) => serializer.deserialize(doc));
