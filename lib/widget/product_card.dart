@@ -87,7 +87,7 @@ class _CartButtons extends StatelessWidget {
 
   void _onPressed(BuildContext context, int amount) {
     var item = OrderItem(product: product!, amount: amount.abs());
-    var event = amount > 0 ? AddToCartEvent(item) : RemoveFromCartEvent(item);
+    var event = amount > 0 ? OrderItemAdded(item) : OrderItemRemoved(item);
 
     BlocProvider.of<CartBloc>(context, listen: false).add(event);
   }

@@ -2,16 +2,16 @@ import 'package:flutter_ecommerce_sample/domain/model/order_item.dart';
 
 abstract class CartEvent {}
 
-class AddToCartEvent extends CartEvent {
+class OrderItemAdded extends CartEvent {
   final OrderItem item;
 
-  AddToCartEvent(this.item);
+  OrderItemAdded(this.item);
 }
 
-class RemoveFromCartEvent extends CartEvent {
+class OrderItemRemoved extends CartEvent {
   final OrderItem item;
 
-  RemoveFromCartEvent(this.item);
+  OrderItemRemoved(this.item);
 }
 
-class ClearCartEvent extends CartEvent {}
+class CartCleared extends CartEvent {}

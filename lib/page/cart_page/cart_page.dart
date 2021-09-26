@@ -37,10 +37,6 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  void _onClearPressed(BuildContext context) {
-    var bloc = BlocProvider.of<CartBloc>(context, listen: false);
-    var event = ClearCartEvent();
-
-    bloc.add(event);
-  }
+  void _onClearPressed(BuildContext context) =>
+      BlocProvider.of<CartBloc>(context, listen: false).add(CartCleared());
 }

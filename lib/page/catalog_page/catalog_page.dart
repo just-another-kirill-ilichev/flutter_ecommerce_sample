@@ -20,14 +20,15 @@ class CatalogPage extends StatelessWidget {
                 title: Text('Каталог', style: TextStyle(color: Colors.black)),
               ),
             ),
-            state.isLoaded ? _buildList(state) : _buildLoading(),
+            // TODO: error state
+            state is ProductsLoadSuccess ? _buildList(state) : _buildLoading(),
           ],
         );
       },
     );
   }
 
-  Widget _buildList(ProductsState state) {
+  Widget _buildList(ProductsLoadSuccess state) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
         (_, index) => ProductCard(product: state.products[index]),

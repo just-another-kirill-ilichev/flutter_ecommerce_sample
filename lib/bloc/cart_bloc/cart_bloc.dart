@@ -5,43 +5,37 @@ import 'cart_event.dart';
 import 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  CartBloc(initialState) : super(initialState);
-
-  factory CartBloc.initial() {
-    return CartBloc(CartState([]));
+  CartBloc() : super(CartState([])) {
+    on<CartCleared>(_clear);
+    on<OrderItemRemoved>(_remove);
+    on<OrderItemAdded>(_add);
   }
 
-  @override
-  Stream<CartState> mapEventToState(CartEvent event) async* {
-    if (event is ClearCartEvent) {
-      yield CartState([]);
-    } else if (event is AddToCartEvent) {
-      yield _add(event);
-    } else if (event is RemoveFromCartEvent) {
-      yield _remove(event);
-    }
-  }
+  void _clear(CartCleared event, Emitter<CartState> emit) =>
+      emit(CartState([]));
 
-  CartState _remove(RemoveFromCartEvent event) {
+  void _remove(OrderItemRemoved event, Emitter<CartState> emit) {
     var index = _getIndexByProduct(event.item.product);
-    return _updateAmount(index, -event.item.amount);
+    emit(_updateAmount(index, -event.item.amount));
   }
 
-  CartState _add(AddToCartEvent event) {
+  void _add(OrderItemAdded event, Emitter<CartState> emit) {
     var index = _getIndexByProduct(event.item.product);
 
     if (index != -1) {
-      return _updateAmount(index, event.item.amount);
+      emit(_updateAmount(index, event.item.amount));
+    } else {
+      var newState =
+          CartState(List<OrderItem>.from(state.items)..add(event.item));
+      emit(newState);
     }
-
-    return CartState(List<OrderItem>.from(state.items)..add(event.item));
   }
 
   int _getIndexByProduct(Product product) =>
       state.items.indexWhere((e) => e.product.id == product.id);
 
   CartState _updateAmount(int itemIndex, int amount) {
-    assert(itemIndex >= 0);
+    assert(itemIndex >= 0 && itemIndex < state.items.length);
 
     var items = List<OrderItem>.from(state.items);
     var newAmount = items[itemIndex].amount + amount;

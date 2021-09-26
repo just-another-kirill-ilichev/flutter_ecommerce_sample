@@ -4,34 +4,33 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_state.dart';
 import 'package:flutter_ecommerce_sample/domain/model/product.dart';
-import 'package:flutter_ecommerce_sample/domain/repository/firebase_repository.dart';
-import 'package:flutter_ecommerce_sample/domain/repository/document_serializer.dart';
+import 'package:flutter_ecommerce_sample/domain/repository/repository_base.dart';
 
 class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
-  late FirebaseRepository<Product> _repository;
+  final RepositoryBase<Product, String> productsRepository;
   StreamSubscription? _productsSubscription;
 
-  ProductsBloc(ProductsState initialState) : super(initialState) {
-    _repository = FirebaseRepository(
-      '/products',
-      DocumentSerializer((id, data) => Product.fromMap(id, data)),
-    );
+  ProductsBloc(this.productsRepository) : super(ProductsInitial()) {
+    on<DataProviderInitialized>(_onDataProviderInitialized);
+    on<ProductsDataChanged>(_onProductsDataChanged);
   }
 
-  factory ProductsBloc.initial() {
-    return ProductsBloc(ProductsState(false, []))..add(LoadProductsEvent());
+  void _onDataProviderInitialized(
+    DataProviderInitialized event,
+    Emitter<ProductsState> emit,
+  ) {
+    emit(ProductsLoadInProgress());
+    _productsSubscription?.cancel();
+    _productsSubscription = productsRepository
+        .getStreamAll()
+        .listen((products) => add(ProductsDataChanged(products)))
+      ..onError((err) => emit(ProductsLoadError(err.toString())));
   }
 
-  @override
-  Stream<ProductsState> mapEventToState(ProductsEvent event) async* {
-    if (event is LoadProductsEvent) {
-      _productsSubscription?.cancel();
-      _productsSubscription = _repository
-          .getStreamAll()
-          .listen((products) => add(UpdateProductsEvent(products)));
-    }
-    if (event is UpdateProductsEvent) {
-      yield ProductsState(true, event.products);
-    }
+  void _onProductsDataChanged(
+    ProductsDataChanged event,
+    Emitter<ProductsState> emit,
+  ) {
+    emit(ProductsLoadSuccess(event.products));
   }
 }
