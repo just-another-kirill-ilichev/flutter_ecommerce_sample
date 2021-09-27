@@ -17,9 +17,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   StreamSubscription? _userSubscription;
 
   AuthBloc(this.authService, this.userRepository) : super(AuthUninitialized()) {
-    on<AuthServiceInitialized>(_onAuthServiceInitialized);
+    on<AuthProviderInitialized>(_onAuthProviderInitialized);
     on<UserChanged>(_onUserChanged);
-    on<UserDataChanged>(_onUserDataChanged);
+    on<UserDataRecieved>(_onUserDataReceived);
+    on<UserDataLoadingFailed>(_onUserDataLoadingFailed);
+    on<UserDataEdited>(_onUserDataEdited);
     on<SignOutRequested>((_, __) => authService.signOut());
     on<SignInWithGoogleRequested>(
       (_, emit) => _onSignIn(authService.signInWithGoogle, emit),
@@ -29,8 +31,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  void _onAuthServiceInitialized(
-    AuthServiceInitialized event,
+  void _onAuthProviderInitialized(
+    AuthProviderInitialized event,
     Emitter<AuthState> emit,
   ) {
     emit(AuthInitialized());
@@ -48,11 +50,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(UserDataLoadInProgress());
     _userSubscription = userRepository
         .getStreamById(event.uid!)
-        .listen((user) => add(UserDataChanged(user)))
-      ..onError((err) => emit(UserDataLoadError(err.toString())));
+        .listen((user) => add(UserDataRecieved(user)))
+      ..onError((err) => add(UserDataLoadingFailed(err.toString())));
   }
 
-  void _onUserDataChanged(UserDataChanged event, Emitter<AuthState> emit) =>
+  void _onUserDataReceived(UserDataRecieved event, Emitter<AuthState> emit) =>
       emit(Authenticated(event.user));
 
   Future<void> _onSignIn(
@@ -67,7 +69,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (credential.additionalUserInfo?.isNewUser ?? false) {
         var uid = credential.user?.uid ?? ''; // TODO
         var user = User(
-          uid,
+          id: uid,
           name: credential.user?.displayName ?? uid,
           email: credential.user?.email ?? '',
           photoUrl: credential.user?.photoURL,
@@ -79,5 +81,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       emit(SignInError(e.toString()));
     }
+  }
+
+  void _onUserDataLoadingFailed(
+    UserDataLoadingFailed event,
+    Emitter<AuthState> emit,
+  ) {
+    emit(UserDataLoadError(event.errorMessage));
+  }
+
+  Future<void> _onUserDataEdited(
+    UserDataEdited event,
+    Emitter<AuthState> emit,
+  ) async {
+    await userRepository.save(event.user);
   }
 }
