@@ -12,15 +12,13 @@ class StartupPage extends StatefulWidget {
 class _StartupPageState extends State<StartupPage> {
   final List<Future> startupTasks = [
     Firebase.initializeApp(),
-    Future.delayed(const Duration(seconds: 5)),
-    Future(() => throw Exception()),
   ];
 
   @override
   void initState() {
     Future.wait(startupTasks)
         .then((_) => _navigate(AppRouter.home))
-        // TODO?: Send log
+        // TODO?: Send logs
         // TODO: Text localization
         .onError((_, __) => _navigate(
               AppRouter.error,
