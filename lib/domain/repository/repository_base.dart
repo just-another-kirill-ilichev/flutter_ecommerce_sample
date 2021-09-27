@@ -8,5 +8,5 @@ abstract class RepositoryBase<TEntity extends Entity<TId>, TId> {
 
   Future<bool> containsById(TId id);
   Future<void> removeById(TId id);
-  Future<void> save(TEntity entity);
+  Future<TId> save(TEntity entity);
 }

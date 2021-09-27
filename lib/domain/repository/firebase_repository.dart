@@ -45,13 +45,15 @@ class FirebaseRepository<T extends Entity<String>>
       _collectionReference.doc(id).delete();
 
   @override
-  Future<void> save(T entity) async {
+  Future<String> save(T entity) async {
     var data = serializer.serialize(entity);
 
     if (entity.id == null) {
-      _collectionReference.add(data);
+      var ref = await _collectionReference.add(data);
+      return ref.id;
     } else {
       _collectionReference.doc(entity.id).set(data);
+      return entity.id!;
     }
   }
 }
