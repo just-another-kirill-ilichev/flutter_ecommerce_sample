@@ -7,13 +7,9 @@ import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_event.dart';
 import 'package:flutter_ecommerce_sample/config/app_router.dart';
 import 'package:flutter_ecommerce_sample/config/app_theme.dart';
-import 'package:flutter_ecommerce_sample/domain/model/user.dart';
-import 'package:flutter_ecommerce_sample/domain/repository/document_serializer.dart';
-import 'package:flutter_ecommerce_sample/domain/repository/firebase_repository.dart';
 import 'package:flutter_ecommerce_sample/domain/service/auth_service.dart';
+import 'package:flutter_ecommerce_sample/domain/service/database_service.dart';
 import 'package:flutter_ecommerce_sample/widget/navigation_wrapper.dart';
-
-import 'domain/model/product.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,28 +56,20 @@ class AppFlow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userRepository = FirebaseRepository<User>(
-      '/users',
-      DocumentSerializer((id, data) => User.fromMap(id, data)),
-    );
-
-    final productRepository = FirebaseRepository<Product>(
-      '/products',
-      DocumentSerializer((id, data) => Product.fromMap(id, data)),
-    );
-
+    final databaseService = FirebaseDatabaseService();
     final authService = AuthService();
+
+    var authBloc = AuthBloc(authService, databaseService)
+      ..add(AuthProviderInitialized());
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(
-          create: (_) => AuthBloc(authService, userRepository)
-            ..add(AuthServiceInitialized()),
-        ),
-        BlocProvider<CartBloc>(create: (_) => CartBloc()),
+        BlocProvider<AuthBloc>.value(value: authBloc),
+        BlocProvider<CartBloc>(
+            create: (_) => CartBloc(authBloc, databaseService)),
         BlocProvider<ProductsBloc>(
           create: (_) =>
-              ProductsBloc(productRepository)..add(DataProviderInitialized()),
+              ProductsBloc(databaseService)..add(DataProviderInitialized()),
         ),
       ],
       child: const Navigator(

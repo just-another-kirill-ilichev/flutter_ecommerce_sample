@@ -5,18 +5,19 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_state.dart';
 import 'package:flutter_ecommerce_sample/domain/model/user.dart';
-import 'package:flutter_ecommerce_sample/domain/repository/firebase_repository.dart';
 import 'package:flutter_ecommerce_sample/domain/service/auth_service.dart';
+import 'package:flutter_ecommerce_sample/domain/service/database_service.dart';
 
 typedef SignInAction = Future<auth.UserCredential> Function();
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthService authService;
-  final FirebaseRepository<User> userRepository;
+  final DatabaseServiceBase databaseService;
 
   StreamSubscription? _userSubscription;
 
-  AuthBloc(this.authService, this.userRepository) : super(AuthUninitialized()) {
+  AuthBloc(this.authService, this.databaseService)
+      : super(AuthUninitialized()) {
     on<AuthProviderInitialized>(_onAuthProviderInitialized);
     on<UserChanged>(_onUserChanged);
     on<UserDataRecieved>(_onUserDataReceived);
@@ -48,7 +49,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     emit(UserDataLoadInProgress());
-    _userSubscription = userRepository
+    _userSubscription = databaseService.userRepository
         .getStreamById(event.uid!)
         .listen((user) => add(UserDataRecieved(user)))
       ..onError((err) => add(UserDataLoadingFailed(err.toString())));
@@ -76,7 +77,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           orders: [],
         );
 
-        await userRepository.save(user);
+        await databaseService.userRepository.save(user);
       }
     } catch (e) {
       emit(SignInError(e.toString()));
@@ -94,6 +95,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     UserDataEdited event,
     Emitter<AuthState> emit,
   ) async {
-    await userRepository.save(event.user);
+    await databaseService.userRepository.save(event.user);
   }
 }
