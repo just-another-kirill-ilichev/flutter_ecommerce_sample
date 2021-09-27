@@ -6,24 +6,19 @@ class Product extends Entity<String> {
   final String description;
   final Decimal price;
 
-  Product(
-    String? id, {
+  Product({
+    String? id,
     required this.title,
     required this.description,
     required this.price,
   }) : super(id);
 
-  Product copyWith({
-    String? id,
-    String? title,
-    String? description,
-    Decimal? price,
-  }) {
+  factory Product.fromMap(String id, Map<String, dynamic> map) {
     return Product(
-      id ?? this.id,
-      title: title ?? this.title,
-      description: description ?? this.description,
-      price: price ?? this.price,
+      id: id,
+      title: map['title'],
+      description: map['description'],
+      price: Decimal.parse(map['price']),
     );
   }
 
@@ -35,14 +30,5 @@ class Product extends Entity<String> {
       'description': description,
       'price': price.toString(),
     };
-  }
-
-  factory Product.fromMap(String id, Map<String, dynamic> map) {
-    return Product(
-      id,
-      title: map['title'],
-      description: map['description'],
-      price: Decimal.parse(map['price']),
-    );
   }
 }
