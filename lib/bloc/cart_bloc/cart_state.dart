@@ -1,9 +1,8 @@
-import 'dart:collection';
+import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_item.dart';
 
-import 'package:flutter_ecommerce_sample/domain/model/order_item.dart';
-
+// TODO: Add new states
 class CartState {
-  final UnmodifiableListView<OrderItem> items;
+  final List<CartItem> items;
 
-  CartState(Iterable<OrderItem> items) : items = UnmodifiableListView(items);
+  CartState(this.items);
 }

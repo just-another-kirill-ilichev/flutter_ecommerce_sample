@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_state.dart';
-import 'package:flutter_ecommerce_sample/domain/model/order_item.dart';
 import 'package:flutter_ecommerce_sample/domain/model/product.dart';
 
 class ProductCard extends StatelessWidget {
@@ -66,29 +65,31 @@ class _CartButtons extends StatelessWidget {
         if (amount == 0) {
           return IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _onPressed(context, 1),
+            onPressed: () => _increment(context),
           );
         }
 
         return Row(children: [
           IconButton(
             icon: const Icon(Icons.remove),
-            onPressed: () => _onPressed(context, -1),
+            onPressed: () => _decrement(context),
           ),
           Text('$amount'),
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _onPressed(context, 1),
+            onPressed: () => _increment(context),
           ),
         ]);
       },
     );
   }
 
-  void _onPressed(BuildContext context, int amount) {
-    var item = OrderItem(product: product!, amount: amount.abs());
-    var event = amount > 0 ? OrderItemAdded(item) : OrderItemRemoved(item);
+  void _increment(BuildContext context) =>
+      _emit(context, ItemsAdded(product!, 1));
 
-    BlocProvider.of<CartBloc>(context, listen: false).add(event);
-  }
+  void _decrement(BuildContext context) =>
+      _emit(context, ItemsRemoved(product!, 1));
+
+  void _emit(BuildContext context, CartEvent event) =>
+      BlocProvider.of<CartBloc>(context, listen: false).add(event);
 }

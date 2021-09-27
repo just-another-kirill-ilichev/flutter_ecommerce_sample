@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_state.dart';
+import 'package:flutter_ecommerce_sample/domain/model/order.dart';
 import 'package:flutter_ecommerce_sample/widget/product_card.dart';
 
 class CartPage extends StatelessWidget {
@@ -26,6 +27,15 @@ class CartPage extends StatelessWidget {
               ),
             ],
           ),
+          // TODO: Fix UI and show this button only if:
+          // 1) User is authenticated
+          // 2) Cart has items
+          SliverToBoxAdapter(
+            child: ElevatedButton(
+              child: Text('Order'),
+              onPressed: () => _onOrderPressed(context),
+            ),
+          ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (_, idx) => ProductCard(product: state.items[idx].product),
@@ -37,6 +47,11 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  void _onClearPressed(BuildContext context) =>
-      BlocProvider.of<CartBloc>(context, listen: false).add(CartCleared());
+  void _onOrderPressed(BuildContext context) =>
+      _emit(context, OrderRequested(DeliveryInfo()));
+
+  void _onClearPressed(BuildContext context) => _emit(context, ItemsCleared());
+
+  void _emit(BuildContext context, CartEvent event) =>
+      BlocProvider.of<CartBloc>(context, listen: false).add(event);
 }
