@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ecommerce_sample/domain/model/entity.dart';
 import 'package:flutter_ecommerce_sample/domain/repository/repository_base.dart';
 import 'package:flutter_ecommerce_sample/domain/repository/document_serializer.dart';
+import 'package:rxdart/rxdart.dart';
 
 class FirebaseRepository<T extends Entity<String>>
     extends RepositoryBase<T, String> {
@@ -26,6 +27,10 @@ class FirebaseRepository<T extends Entity<String>>
       serializer.deserializeMany((await _collectionReference.get()).docs);
 
   @override
+  Future<List<T>> fetchManyById(List<String> ids) async =>
+      Future.wait(ids.map((id) => fetchById(id)));
+
+  @override
   Future<T> fetchById(String id) async =>
       serializer.deserialize(await _collectionReference.doc(id).get());
 
@@ -33,6 +38,10 @@ class FirebaseRepository<T extends Entity<String>>
   Stream<List<T>> getStreamAll() => _collectionReference
       .snapshots()
       .map((snapshot) => serializer.deserializeMany(snapshot.docs));
+
+  @override
+  Stream<List<T>> getStreamManyById(List<String> ids) =>
+      CombineLatestStream.list(ids.map((id) => getStreamById(id)));
 
   @override
   Stream<T> getStreamById(String id) => _collectionReference
