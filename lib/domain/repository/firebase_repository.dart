@@ -41,8 +41,8 @@ class FirebaseRepository<T extends Entity<String>>
       .map((doc) => serializer.deserialize(doc));
 
   @override
-  Future<void> removeById(String id) async =>
-      _collectionReference.doc(id).delete();
+  Future<void> remove(T entity) async =>
+      _collectionReference.doc(entity.id).delete();
 
   @override
   Future<String> save(T entity) async {

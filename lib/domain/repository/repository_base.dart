@@ -7,6 +7,6 @@ abstract class RepositoryBase<TEntity extends Entity<TId>, TId> {
   Stream<TEntity> getStreamById(TId id);
 
   Future<bool> containsById(TId id);
-  Future<void> removeById(TId id);
+  Future<void> remove(TEntity entity);
   Future<TId> save(TEntity entity);
 }
