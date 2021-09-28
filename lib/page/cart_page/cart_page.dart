@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_state.dart';
-import 'package:flutter_ecommerce_sample/domain/model/order.dart';
+import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
 import 'package:flutter_ecommerce_sample/widget/product_card.dart';
 
 class CartPage extends StatelessWidget {
@@ -47,8 +47,13 @@ class CartPage extends StatelessWidget {
     );
   }
 
-  void _onOrderPressed(BuildContext context) =>
-      _emit(context, OrderRequested(DeliveryInfo()));
+  void _onOrderPressed(BuildContext context) => _emit(
+      context,
+      OrderRequested(DeliveryInfo(
+        // TODO: Add actual data
+        address: 'placeholder',
+        date: DateTime.now().add(const Duration(days: 1)),
+      )));
 
   void _onClearPressed(BuildContext context) => _emit(context, ItemsCleared());
 

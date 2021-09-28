@@ -1,48 +1,23 @@
 import 'package:flutter_ecommerce_sample/domain/model/entity.dart';
 
-class OrderItem {
-  final String productId;
-  final int amount;
-
-  OrderItem(this.productId, this.amount);
-
-  Map<String, dynamic> toMap() {
-    return {
-      'productId': productId,
-      'amount': amount,
-    };
-  }
-
-  factory OrderItem.fromMap(Map<String, dynamic> map) {
-    return OrderItem(
-      map['productId'],
-      map['amount'],
-    );
-  }
-}
-
-class DeliveryInfo {
-  DeliveryInfo();
-
-  factory DeliveryInfo.fromMap(Map<String, dynamic> map) {
-    return DeliveryInfo();
-  }
-
-  Map<String, dynamic> toMap() {
-    return {};
-  }
-}
+part 'order_item.dart';
+part 'delivery_info.dart';
+part 'order_status.dart';
 
 class Order extends Entity<String> {
   final List<OrderItem> items;
   final DeliveryInfo deliveryInfo;
   final String userId;
+  final OrderStatus status;
+  final DateTime date;
 
   Order({
     String? id,
     required this.items,
     required this.deliveryInfo,
     required this.userId,
+    required this.status,
+    required this.date,
   }) : super(id);
 
   factory Order.fromMap(String id, Map<String, dynamic> map) {
@@ -53,6 +28,8 @@ class Order extends Entity<String> {
           .map((e) => OrderItem.fromMap(e)),
       deliveryInfo: DeliveryInfo.fromMap(map['deliveryInfo']),
       userId: map['userId'],
+      date: map['date'].toDate(),
+      status: OrderStatusExtension.parse(map['status']),
     );
   }
 
@@ -62,6 +39,8 @@ class Order extends Entity<String> {
       'items': items.map((e) => e.toMap()).toList(),
       'deliveryInfo': deliveryInfo.toMap(),
       'userId': userId,
+      'orderDate': date,
+      'status': status.stringValue,
     };
   }
 }

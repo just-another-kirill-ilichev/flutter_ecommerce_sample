@@ -3,7 +3,7 @@ import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_state.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_item.dart';
-import 'package:flutter_ecommerce_sample/domain/model/order.dart';
+import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
 import 'package:flutter_ecommerce_sample/domain/model/product.dart';
 import 'package:flutter_ecommerce_sample/domain/model/user.dart';
 import 'package:flutter_ecommerce_sample/domain/service/database_service.dart';
@@ -94,6 +94,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       items: items,
       deliveryInfo: event.deliveryInfo,
       userId: currentUser.id!,
+      status: OrderStatus.processing,
+      date: DateTime.now(),
     );
 
     var orderId = await databaseService.orderRepository.save(order);
