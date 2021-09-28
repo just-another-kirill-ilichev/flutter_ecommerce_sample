@@ -1,4 +1,4 @@
-import 'package:flutter_ecommerce_sample/domain/model/product.dart';
+part of 'products_bloc.dart';
 
 class ProductsState {}
 

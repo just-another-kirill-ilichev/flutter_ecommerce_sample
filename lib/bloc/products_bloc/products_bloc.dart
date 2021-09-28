@@ -1,9 +1,11 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_event.dart';
-import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_state.dart';
 import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
+import 'package:flutter_ecommerce_sample/domain/model/product.dart';
+
+part 'products_event.dart';
+part 'products_state.dart';
 
 class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   final ServiceProvider serviceProvider;

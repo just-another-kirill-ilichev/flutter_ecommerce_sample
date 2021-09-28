@@ -1,4 +1,4 @@
-import 'package:flutter_ecommerce_sample/domain/model/user.dart';
+part of 'auth_bloc.dart';
 
 abstract class AuthState {}
 

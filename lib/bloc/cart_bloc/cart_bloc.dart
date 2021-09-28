@@ -1,19 +1,17 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_bloc.dart';
-import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart'
-    as auth;
-import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_state.dart';
-import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_item.dart';
+import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_bloc.dart' as auth;
 import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
 import 'package:flutter_ecommerce_sample/domain/model/product.dart';
 import 'package:flutter_ecommerce_sample/domain/model/user.dart';
 import 'package:flutter_ecommerce_sample/domain/repository/repository_base.dart';
 import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
-import 'cart_event.dart';
-import 'cart_state.dart';
+
+part 'cart_item.dart';
+part 'cart_event.dart';
+part 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  final AuthBloc authBloc;
+  final auth.AuthBloc authBloc;
   final ServiceProvider serviceProvider;
 
   late RepositoryBase<Order, String> _repository;
@@ -26,7 +24,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<OrderRequested>(_onOrderRequested);
   }
 
-  factory CartBloc.started(AuthBloc authBloc, ServiceProvider serviceProvider) {
+  factory CartBloc.started(
+      auth.AuthBloc authBloc, ServiceProvider serviceProvider) {
     return CartBloc(authBloc, serviceProvider)..add(AppStarted());
   }
 
@@ -97,11 +96,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     OrderRequested event,
     Emitter<CartState> emit,
   ) async {
-    if (authBloc.state is! Authenticated) {
+    if (authBloc.state is! auth.Authenticated) {
       return;
     }
 
-    var currentUser = (authBloc.state as Authenticated).user;
+    var currentUser = (authBloc.state as auth.Authenticated).user;
     var items = state.items.map((e) => e.toOrderItem()).toList();
 
     var order = Order(

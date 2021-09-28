@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
-import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_event.dart';
-import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_state.dart';
 import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
 import 'package:flutter_ecommerce_sample/widget/product_card.dart';
 

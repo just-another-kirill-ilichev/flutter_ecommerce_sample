@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_bloc.dart';
-import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart';
-import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_state.dart';
 import 'package:flutter_ecommerce_sample/page/account_page/layout/authenticated_layout.dart';
 import 'package:flutter_ecommerce_sample/page/account_page/layout/unauthenticated_layout.dart';
 

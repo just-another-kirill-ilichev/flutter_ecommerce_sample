@@ -2,12 +2,13 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart';
-import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_state.dart';
 import 'package:flutter_ecommerce_sample/domain/model/user.dart';
 import 'package:flutter_ecommerce_sample/domain/repository/repository_base.dart';
 import 'package:flutter_ecommerce_sample/domain/service/auth_service.dart';
 import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
+
+part 'auth_event.dart';
+part 'auth_state.dart';
 
 typedef SignInAction = Future<auth.UserCredential> Function();
 

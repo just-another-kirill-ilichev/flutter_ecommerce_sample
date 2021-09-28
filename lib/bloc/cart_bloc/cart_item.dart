@@ -1,5 +1,4 @@
-import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
-import 'package:flutter_ecommerce_sample/domain/model/product.dart';
+part of 'cart_bloc.dart';
 
 class CartItem {
   final Product product;

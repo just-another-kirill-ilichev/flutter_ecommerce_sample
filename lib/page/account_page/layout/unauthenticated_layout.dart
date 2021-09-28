@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_bloc.dart';
-import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart';
 
 class UnauthenticatedLayout extends StatelessWidget {
   const UnauthenticatedLayout({Key? key}) : super(key: key);

@@ -1,4 +1,4 @@
-import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_item.dart';
+part of 'cart_bloc.dart';
 
 // TODO: Add new states
 class CartState {
