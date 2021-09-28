@@ -49,3 +49,6 @@ app.*.map.json
 google-services.json
 GoogleService-Info.plist
 Info.plist
+
+# ios stuff
+/ios/build
