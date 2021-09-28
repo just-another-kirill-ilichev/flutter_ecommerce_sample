@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_bloc.dart';
+import 'package:flutter_ecommerce_sample/bloc/generic/blocs.dart';
+import 'package:flutter_ecommerce_sample/bloc/generic/crud_bloc/crud_bloc.dart';
+import 'package:flutter_ecommerce_sample/domain/model/product.dart';
 import 'package:flutter_ecommerce_sample/widget/product_card.dart';
 
 class CatalogPage extends StatelessWidget {
@@ -8,7 +10,7 @@ class CatalogPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProductsBloc, ProductsState>(
+    return BlocBuilder<ProductsBloc, CrudState<Product>>(
       builder: (_, state) {
         return CustomScrollView(
           slivers: [
@@ -20,18 +22,20 @@ class CatalogPage extends StatelessWidget {
               ),
             ),
             // TODO: error state
-            state is ProductsLoadSuccess ? _buildList(state) : _buildLoading(),
+            state is DataLoadSuccess<Product>
+                ? _buildList(state)
+                : _buildLoading(),
           ],
         );
       },
     );
   }
 
-  Widget _buildList(ProductsLoadSuccess state) {
+  Widget _buildList(DataLoadSuccess<Product> state) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
-        (_, index) => ProductCard(product: state.products[index]),
-        childCount: state.products.length,
+        (_, index) => ProductCard(product: state.data[index]),
+        childCount: state.data.length,
       ),
     );
   }

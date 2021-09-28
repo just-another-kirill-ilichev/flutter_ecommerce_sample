@@ -12,9 +12,14 @@ class ServiceProvider {
   Future<DatabaseServiceBase> get databaseService => _databaseCompleter.future;
 
   Future<void> initialize() async {
-    await Firebase.initializeApp();
+    try {
+      await Firebase.initializeApp();
 
-    _authCompleter.complete(AuthService());
-    _databaseCompleter.complete(FirebaseDatabaseService());
+      _authCompleter.complete(AuthService());
+      _databaseCompleter.complete(FirebaseDatabaseService());
+    } catch (e, stacktrace) {
+      _authCompleter.completeError(e, stacktrace);
+      _databaseCompleter.completeError(e, stacktrace);
+    }
   }
 }
