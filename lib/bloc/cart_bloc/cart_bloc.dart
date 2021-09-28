@@ -1,24 +1,38 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_bloc.dart';
-import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart';
+import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart'
+    as auth;
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_state.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_item.dart';
 import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
 import 'package:flutter_ecommerce_sample/domain/model/product.dart';
 import 'package:flutter_ecommerce_sample/domain/model/user.dart';
-import 'package:flutter_ecommerce_sample/domain/service/database_service.dart';
+import 'package:flutter_ecommerce_sample/domain/repository/repository_base.dart';
+import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
 import 'cart_event.dart';
 import 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
   final AuthBloc authBloc;
-  final DatabaseServiceBase databaseService;
+  final ServiceProvider serviceProvider;
 
-  CartBloc(this.authBloc, this.databaseService) : super(CartState([])) {
+  late RepositoryBase<Order, String> _repository;
+
+  CartBloc(this.authBloc, this.serviceProvider) : super(CartState([])) {
+    on<AppStarted>(_onAppStarted);
     on<ItemsCleared>(_clear);
     on<ItemsRemoved>(_remove);
     on<ItemsAdded>(_add);
     on<OrderRequested>(_onOrderRequested);
+  }
+
+  factory CartBloc.started(AuthBloc authBloc, ServiceProvider serviceProvider) {
+    return CartBloc(authBloc, serviceProvider)..add(AppStarted());
+  }
+
+  Future<void> _onAppStarted(AppStarted event, Emitter<CartState> emit) async {
+    var databaseService = await serviceProvider.databaseService;
+    _repository = databaseService.orderRepository;
   }
 
   void _clear(ItemsCleared event, Emitter<CartState> emit) =>
@@ -98,7 +112,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       date: DateTime.now(),
     );
 
-    var orderId = await databaseService.orderRepository.save(order);
+    var orderId = await _repository.save(order);
     _updateUserOrders(currentUser, orderId);
 
     add(ItemsCleared());
@@ -107,6 +121,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   void _updateUserOrders(User currentUser, String orderId) {
     var user = currentUser.copyWith(orders: currentUser.orders..add(orderId));
 
-    authBloc.add(UserDataEdited(user));
+    authBloc.add(auth.UserDataEdited(user));
   }
 }

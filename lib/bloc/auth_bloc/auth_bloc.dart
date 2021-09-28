@@ -5,39 +5,48 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart';
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_state.dart';
 import 'package:flutter_ecommerce_sample/domain/model/user.dart';
+import 'package:flutter_ecommerce_sample/domain/repository/repository_base.dart';
 import 'package:flutter_ecommerce_sample/domain/service/auth_service.dart';
-import 'package:flutter_ecommerce_sample/domain/service/database_service.dart';
+import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
 
 typedef SignInAction = Future<auth.UserCredential> Function();
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final AuthService authService;
-  final DatabaseServiceBase databaseService;
+  final ServiceProvider serviceProvider;
+  late AuthService _authService;
+  late RepositoryBase<User, String> _repository;
 
   StreamSubscription? _userSubscription;
 
-  AuthBloc(this.authService, this.databaseService)
-      : super(AuthUninitialized()) {
-    on<AuthProviderInitialized>(_onAuthProviderInitialized);
+  AuthBloc(this.serviceProvider) : super(Initial()) {
+    on<AppStarted>(_onAuthProviderInitialized);
     on<UserChanged>(_onUserChanged);
     on<UserDataRecieved>(_onUserDataReceived);
     on<UserDataLoadingFailed>(_onUserDataLoadingFailed);
     on<UserDataEdited>(_onUserDataEdited);
-    on<SignOutRequested>((_, __) => authService.signOut());
+    on<SignOutRequested>((_, __) => _authService.signOut());
     on<SignInWithGoogleRequested>(
-      (_, emit) => _onSignIn(authService.signInWithGoogle, emit),
+      (_, emit) => _onSignIn(_authService.signInWithGoogle, emit),
     );
     on<SignInWithAppleRequested>(
-      (_, emit) => _onSignIn(authService.signInWithApple, emit),
+      (_, emit) => _onSignIn(_authService.signInWithApple, emit),
     );
   }
 
-  void _onAuthProviderInitialized(
-    AuthProviderInitialized event,
+  factory AuthBloc.started(ServiceProvider servicesProvider) {
+    return AuthBloc(servicesProvider)..add(AppStarted());
+  }
+
+  Future<void> _onAuthProviderInitialized(
+    AppStarted event,
     Emitter<AuthState> emit,
-  ) {
-    emit(AuthInitialized());
-    authService.authStateChanges.listen((user) => add(UserChanged(user?.uid)));
+  ) async {
+    _authService = await serviceProvider.authService;
+
+    var databaseService = await serviceProvider.databaseService;
+    _repository = databaseService.userRepository;
+
+    _authService.authStateChanges.listen((user) => add(UserChanged(user?.uid)));
   }
 
   void _onUserChanged(UserChanged event, Emitter<AuthState> emit) {
@@ -49,7 +58,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
 
     emit(UserDataLoadInProgress());
-    _userSubscription = databaseService.userRepository
+    _userSubscription = _repository
         .getStreamById(event.uid!)
         .listen((user) => add(UserDataRecieved(user)))
       ..onError((err) => add(UserDataLoadingFailed(err.toString())));
@@ -77,7 +86,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           orders: [],
         );
 
-        await databaseService.userRepository.save(user);
+        await _repository.save(user);
       }
     } catch (e) {
       emit(SignInError(e.toString()));
@@ -95,6 +104,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     UserDataEdited event,
     Emitter<AuthState> emit,
   ) async {
-    await databaseService.userRepository.save(event.user);
+    await _repository.save(event.user);
   }
 }

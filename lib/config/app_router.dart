@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ecommerce_sample/main.dart';
-import 'package:flutter_ecommerce_sample/page/error_page/error_page.dart';
-import 'package:flutter_ecommerce_sample/page/startup_page/startup_page.dart';
+import 'package:flutter_ecommerce_sample/widget/navigation_wrapper.dart';
 
 abstract class AppRouter {
-  static const startup = '/startup';
-  static const error = '/error';
-  static const home = '/home';
+  static const catalog = '/catalog';
+  static const cart = '/cart';
+  static const account = '/account';
 
   static Route _materialRoute(Widget page) {
     return MaterialPageRoute(builder: (ctx) => page);
@@ -14,13 +12,12 @@ abstract class AppRouter {
 
   static Route? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case startup:
-        return _materialRoute(const StartupPage());
-      case error:
-        var errorText = settings.arguments as String;
-        return _materialRoute(ErrorPage(errorText: errorText));
-      case home:
-        return _materialRoute(const AppFlow());
+      case catalog:
+        return _materialRoute(const NavigationWrapper(index: 0));
+      case cart:
+        return _materialRoute(const NavigationWrapper(index: 1));
+      case account:
+        return _materialRoute(const NavigationWrapper(index: 2));
     }
   }
 }

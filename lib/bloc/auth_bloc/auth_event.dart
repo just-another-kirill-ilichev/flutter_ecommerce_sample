@@ -2,8 +2,8 @@ import 'package:flutter_ecommerce_sample/domain/model/user.dart';
 
 abstract class AuthEvent {}
 
-/// Auth provider has been initialized and we're able to listen auth events now
-class AuthProviderInitialized extends AuthEvent {}
+/// App started
+class AppStarted extends AuthEvent {}
 
 /// Auth state stream has returned new user
 class UserChanged extends AuthEvent {

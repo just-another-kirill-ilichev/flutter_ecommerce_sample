@@ -3,78 +3,42 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_bloc.dart';
-import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_event.dart';
-import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_event.dart';
 import 'package:flutter_ecommerce_sample/config/app_router.dart';
 import 'package:flutter_ecommerce_sample/config/app_theme.dart';
-import 'package:flutter_ecommerce_sample/domain/service/auth_service.dart';
-import 'package:flutter_ecommerce_sample/domain/service/database_service.dart';
-import 'package:flutter_ecommerce_sample/widget/navigation_wrapper.dart';
+import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const App());
+
+  var serviceProvider = ServiceProvider()..initialize();
+
+  runApp(App(serviceProvider: serviceProvider));
 }
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  final ServiceProvider serviceProvider;
+
+  const App({Key? key, required this.serviceProvider}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: appTheme,
-      onGenerateRoute: AppRouter.onGenerateRoute,
-      initialRoute: AppRouter.startup,
-    );
-  }
-}
-
-abstract class AppFlowRouter {
-  static const catalog = '/catalog';
-  static const cart = '/cart';
-  static const account = '/account';
-
-  static Route _materialRoute(Widget page) {
-    return MaterialPageRoute(builder: (ctx) => page);
-  }
-
-  static Route? onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case catalog:
-        return _materialRoute(const NavigationWrapper(index: 0));
-      case cart:
-        return _materialRoute(const NavigationWrapper(index: 1));
-      case account:
-        return _materialRoute(const NavigationWrapper(index: 2));
-    }
-  }
-}
-
-class AppFlow extends StatelessWidget {
-  const AppFlow({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final databaseService = FirebaseDatabaseService();
-    final authService = AuthService();
-
-    var authBloc = AuthBloc(authService, databaseService)
-      ..add(AuthProviderInitialized());
+    var authBloc = AuthBloc.started(serviceProvider);
 
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>.value(value: authBloc),
         BlocProvider<CartBloc>(
-            create: (_) => CartBloc(authBloc, databaseService)),
+          create: (_) => CartBloc.started(authBloc, serviceProvider),
+        ),
         BlocProvider<ProductsBloc>(
-          create: (_) =>
-              ProductsBloc(databaseService)..add(DataProviderInitialized()),
+          create: (_) => ProductsBloc.started(serviceProvider),
         ),
       ],
-      child: const Navigator(
-        onGenerateRoute: AppFlowRouter.onGenerateRoute,
-        initialRoute: AppFlowRouter.catalog,
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: appTheme,
+        onGenerateRoute: AppRouter.onGenerateRoute,
+        initialRoute: AppRouter.catalog,
       ),
     );
   }

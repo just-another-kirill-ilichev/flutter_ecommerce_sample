@@ -3,6 +3,8 @@ import 'package:flutter_ecommerce_sample/domain/model/product.dart';
 
 abstract class CartEvent {}
 
+class AppStarted extends CartEvent {}
+
 class ItemsAdded extends CartEvent {
   final Product product;
   final int amount;

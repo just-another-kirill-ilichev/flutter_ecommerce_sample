@@ -3,11 +3,8 @@ import 'package:flutter_ecommerce_sample/domain/model/user.dart';
 abstract class AuthState {}
 
 /// Initial state. AuthService has not been initialized yet
-class AuthUninitialized extends AuthState {}
-
-/// Currently, AuthService is initialized,
-/// and bloc is awaiting first snapshot from auth state stream
-class AuthInitialized extends AuthState {}
+/// or auth state stream doesn't provide any data for now
+class Initial extends AuthState {}
 
 /// Awaiting user data from Firestore after auth state stream
 /// returned non-null user
