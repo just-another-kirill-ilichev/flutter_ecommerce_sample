@@ -25,7 +25,8 @@ class Order extends Entity<String> {
       id: id,
       items: map['items']
           .cast<Map<String, dynamic>>()
-          .map((e) => OrderItem.fromMap(e)),
+          .map<OrderItem>((e) => OrderItem.fromMap(e))
+          .toList(),
       deliveryInfo: DeliveryInfo.fromMap(map['deliveryInfo']),
       userId: map['userId'],
       date: map['date'].toDate(),
@@ -39,7 +40,7 @@ class Order extends Entity<String> {
       'items': items.map((e) => e.toMap()).toList(),
       'deliveryInfo': deliveryInfo.toMap(),
       'userId': userId,
-      'orderDate': date,
+      'date': date,
       'status': status.stringValue,
     };
   }

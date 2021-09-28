@@ -12,13 +12,13 @@ abstract class DatabaseServiceBase {
   RepositoryBase<Product, String> get productRepository;
 
   RepositoryBase<T, String> getRepository<T extends Entity<String>>() {
-    if (T is User) {
+    if (T == User) {
       return userRepository as RepositoryBase<T, String>;
     }
-    if (T is Order) {
+    if (T == Order) {
       return orderRepository as RepositoryBase<T, String>;
     }
-    if (T is Product) {
+    if (T == Product) {
       return productRepository as RepositoryBase<T, String>;
     }
 
