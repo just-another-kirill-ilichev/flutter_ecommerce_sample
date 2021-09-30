@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_ecommerce_sample/bloc/generic/crud_bloc/data_filter.dart';
 import 'package:flutter_ecommerce_sample/domain/model/entity.dart';
 import 'package:flutter_ecommerce_sample/domain/repository/repository_base.dart';
 import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
@@ -16,26 +18,63 @@ class CrudBloc<T extends Entity<String>>
   StreamSubscription? _subscription;
 
   CrudBloc(this.servicesProvider) : super(Initial<T>()) {
-    on<AppStarted<T>>(_onAppStarted);
-    on<DataReceived<T>>(_onDataReceived);
-    on<DataLoadingFailed<T>>(_onDataLoadingFailed);
-    on<DataSaveRequested<T>>(_onDataSaveRequested);
-    on<DataRemoveRequested<T>>(_onDataRemoveRequested);
+    on<AppStarted<T>>(onAppStarted);
+    on<DataProviderInitialized<T>>(onDataProviderInitialized);
+    on<DataReceived<T>>(onDataReceived);
+    on<DataLoadingFailed<T>>(onDataLoadingFailed);
+    on<DataGetAllRequested<T>>(onDataGetAllRequested);
+    on<DataGetWithFilterRequested<T>>(onDataGetWithFilterRequested);
+    on<DataSaveRequested<T>>(onDataSaveRequested);
+    on<DataRemoveRequested<T>>(onDataRemoveRequested);
   }
 
-  Future<void> _onAppStarted(
+  @protected
+  Future<void> onAppStarted(
     AppStarted<T> event,
     Emitter<CrudState<T>> emit,
   ) async {
     try {
       var service = await servicesProvider.databaseService;
       _repository = service.getRepository<T>();
+
+      emit(InitSuccess());
+      add(DataProviderInitialized());
     } catch (e) {
       emit(DataLoadError('Ошибка подключения к сервисам Firebase'));
       return;
     }
+  }
 
+  @protected
+  Future<void> onDataProviderInitialized(
+    DataProviderInitialized<T> event,
+    Emitter<CrudState<T>> emit,
+  ) async {
+    add(DataGetAllRequested());
+  }
+
+  @protected
+  void onDataReceived(DataReceived<T> event, Emitter<CrudState<T>> emit) {
+    emit(DataLoadSuccess(event.data));
+  }
+
+  @protected
+  void onDataLoadingFailed(
+    DataLoadingFailed<T> event,
+    Emitter<CrudState<T>> emit,
+  ) {
+    emit(DataLoadError(event.errorMessage));
+  }
+
+  @protected
+  void onDataGetAllRequested(
+    DataGetAllRequested<T> event,
+    Emitter<CrudState<T>> emit,
+  ) {
+    assert(state is! Initial);
     emit(DataLoadInProgress());
+
+    _subscription?.cancel();
 
     _subscription = _repository
         .getStreamAll()
@@ -43,18 +82,24 @@ class CrudBloc<T extends Entity<String>>
       ..onError((e) => add(DataLoadingFailed(e.toString())));
   }
 
-  void _onDataReceived(DataReceived<T> event, Emitter<CrudState<T>> emit) {
-    emit(DataLoadSuccess(event.data));
-  }
-
-  void _onDataLoadingFailed(
-    DataLoadingFailed<T> event,
+  @protected
+  void onDataGetWithFilterRequested(
+    DataGetWithFilterRequested<T> event,
     Emitter<CrudState<T>> emit,
   ) {
-    emit(DataLoadError(event.errorMessage));
+    assert(state is! Initial);
+    emit(DataLoadInProgress());
+
+    _subscription?.cancel();
+
+    _subscription = event.filter
+        .getData(_repository)
+        .listen((event) => add(DataReceived(event)))
+      ..onError((e) => add(DataLoadingFailed(e.toString())));
   }
 
-  Future<void> _onDataSaveRequested(
+  @protected
+  Future<void> onDataSaveRequested(
     DataSaveRequested<T> event,
     Emitter<CrudState<T>> emit,
   ) async {
@@ -62,7 +107,8 @@ class CrudBloc<T extends Entity<String>>
     await _repository.save(event.item);
   }
 
-  Future<void> _onDataRemoveRequested(
+  @protected
+  Future<void> onDataRemoveRequested(
     DataRemoveRequested<T> event,
     Emitter<CrudState<T>> emit,
   ) async {

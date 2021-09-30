@@ -4,6 +4,8 @@ class CrudState<T> {}
 
 class Initial<T> extends CrudState<T> {}
 
+class InitSuccess<T> extends CrudState<T> {}
+
 class DataLoadInProgress<T> extends CrudState<T> {}
 
 class DataLoadSuccess<T> extends CrudState<T> {
