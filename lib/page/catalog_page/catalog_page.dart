@@ -15,20 +15,28 @@ class CatalogPage extends StatelessWidget {
         return CustomScrollView(
           slivers: [
             const SliverAppBar(
-              expandedHeight: 200,
+              expandedHeight: 100,
               flexibleSpace: FlexibleSpaceBar(
-                centerTitle: true,
+                centerTitle: false,
+                titlePadding: EdgeInsets.only(left: 16, bottom: 18),
                 title: Text('Каталог', style: TextStyle(color: Colors.black)),
               ),
             ),
-            // TODO: error state
-            state is DataLoadSuccess<Product>
-                ? _buildList(state)
-                : _buildLoading(),
+            _buildBody(state),
           ],
         );
       },
     );
+  }
+
+  Widget _buildBody(CrudState<Product> state) {
+    if (state is DataLoadSuccess<Product>) {
+      return _buildList(state);
+    }
+    if (state is DataLoadError<Product>) {
+      return _buildError();
+    }
+    return _buildLoading();
   }
 
   Widget _buildList(DataLoadSuccess<Product> state) {
@@ -43,6 +51,31 @@ class CatalogPage extends StatelessWidget {
   Widget _buildLoading() {
     return const SliverFillRemaining(
       child: Center(child: CircularProgressIndicator.adaptive()),
+    );
+  }
+
+  Widget _buildError() {
+    return SliverFillRemaining(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            Icon(
+              Icons.error_outline,
+              color: Colors.red,
+              size: 36,
+            ),
+            SizedBox(height: 4),
+            FractionallySizedBox(
+              widthFactor: 0.7,
+              child: Text(
+                'Произошла ошибка при загрузке данных',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
