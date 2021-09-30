@@ -4,12 +4,14 @@ import 'package:flutter_ecommerce_sample/domain/model/entity.dart';
 class Product extends Entity<String> {
   final String title;
   final String description;
+  final String? photoUrl;
   final Decimal price;
 
   Product({
     String? id,
     required this.title,
     required this.description,
+    this.photoUrl,
     required this.price,
   }) : super(id);
 
@@ -18,6 +20,7 @@ class Product extends Entity<String> {
       id: id,
       title: map['title'],
       description: map['description'],
+      photoUrl: map['photoUrl'],
       price: Decimal.parse(map['price']),
     );
   }
@@ -29,6 +32,7 @@ class Product extends Entity<String> {
       'title': title,
       'description': description,
       'price': price.toString(),
+      'photoUrl': photoUrl,
     };
   }
 }
