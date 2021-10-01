@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/auth_bloc/auth_bloc.dart'
     show AuthBloc, AuthState, Authenticated;
@@ -8,6 +10,8 @@ import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
 
 class OrdersBloc extends CrudBloc<Order> {
   final AuthBloc authBloc;
+
+  StreamSubscription? _authBlocSubscription;
 
   OrdersBloc(this.authBloc, ServiceProvider servicesProvider)
       : super(servicesProvider);
@@ -26,7 +30,11 @@ class OrdersBloc extends CrudBloc<Order> {
   ) async {
     // We might miss some events if this bloc was initialized after auth bloc
     _updateData(authBloc.state);
-    authBloc.stream.listen(_updateData);
+
+    // It's very unlikely that we have two DataProviderInitialized events,
+    // but just in case let's cancel auth bloc subscription
+    _authBlocSubscription?.cancel();
+    _authBlocSubscription = authBloc.stream.listen(_updateData);
   }
 
   void _updateData(AuthState state) {
@@ -35,5 +43,11 @@ class OrdersBloc extends CrudBloc<Order> {
     } else {
       add(DataGetWithFilterRequested(NoDataFilter()));
     }
+  }
+
+  @override
+  Future<void> close() async {
+    _authBlocSubscription?.cancel();
+    return super.close();
   }
 }

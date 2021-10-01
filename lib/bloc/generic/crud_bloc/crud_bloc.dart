@@ -13,11 +13,12 @@ part 'crud_state.dart';
 class CrudBloc<T extends Entity<String>>
     extends Bloc<CrudEvent<T>, CrudState<T>> {
   final ServiceProvider servicesProvider;
+  final DataFilter<T, String>? initialFilter;
 
   late RepositoryBase<T, String> _repository;
   StreamSubscription? _subscription;
 
-  CrudBloc(this.servicesProvider) : super(Initial<T>()) {
+  CrudBloc(this.servicesProvider, [this.initialFilter]) : super(Initial<T>()) {
     on<AppStarted<T>>(onAppStarted);
     on<DataProviderInitialized<T>>(onDataProviderInitialized);
     on<DataReceived<T>>(onDataReceived);
@@ -50,7 +51,11 @@ class CrudBloc<T extends Entity<String>>
     DataProviderInitialized<T> event,
     Emitter<CrudState<T>> emit,
   ) async {
-    add(DataGetAllRequested());
+    if (initialFilter == null) {
+      add(DataGetAllRequested());
+    } else {
+      add(DataGetWithFilterRequested(initialFilter!));
+    }
   }
 
   @protected
@@ -114,5 +119,11 @@ class CrudBloc<T extends Entity<String>>
   ) async {
     assert(state is! Initial);
     await _repository.remove(event.item);
+  }
+
+  @override
+  Future<void> close() {
+    _subscription?.cancel();
+    return super.close();
   }
 }
