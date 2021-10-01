@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/generic/crud_bloc/crud_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/orders_bloc/orders_bloc.dart';
+import 'package:flutter_ecommerce_sample/config/app_router.dart';
 import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
 
 class OrderHistoryPage extends StatelessWidget {
@@ -22,6 +23,11 @@ class OrderHistoryPage extends StatelessWidget {
             return ListTile(
               title: Text(item.date.toString()),
               subtitle: Text(item.status.stringValue),
+              onTap: () => Navigator.pushNamed(
+                context,
+                AppRouter.orderDetails,
+                arguments: item,
+              ),
             );
           },
         ),

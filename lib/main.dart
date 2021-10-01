@@ -25,24 +25,27 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     var authBloc = AuthBloc.started(serviceProvider);
 
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AuthBloc>.value(value: authBloc),
-        BlocProvider<CartBloc>(
-          create: (_) => CartBloc.started(authBloc, serviceProvider),
+    return RepositoryProvider.value(
+      value: serviceProvider,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthBloc>.value(value: authBloc),
+          BlocProvider<CartBloc>(
+            create: (_) => CartBloc.started(authBloc, serviceProvider),
+          ),
+          BlocProvider<ProductsBloc>(
+            create: (_) => ProductsBloc.started(serviceProvider),
+          ),
+          BlocProvider<OrdersBloc>(
+            create: (_) => OrdersBloc.started(authBloc, serviceProvider),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'Flutter Demo',
+          theme: appTheme,
+          onGenerateRoute: AppRouter.onGenerateRoute,
+          initialRoute: AppRouter.catalog,
         ),
-        BlocProvider<ProductsBloc>(
-          create: (_) => ProductsBloc.started(serviceProvider),
-        ),
-        BlocProvider<OrdersBloc>(
-          create: (_) => OrdersBloc.started(authBloc, serviceProvider),
-        ),
-      ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: appTheme,
-        onGenerateRoute: AppRouter.onGenerateRoute,
-        initialRoute: AppRouter.catalog,
       ),
     );
   }
