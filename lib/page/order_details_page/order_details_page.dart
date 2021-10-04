@@ -6,6 +6,7 @@ import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_bloc.dart';
 import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
 import 'package:flutter_ecommerce_sample/domain/model/product.dart';
 import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
+import 'package:flutter_ecommerce_sample/widget/product_card.dart';
 
 class OrderDetailsPage extends StatefulWidget {
   final Order? order;
@@ -36,7 +37,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(title: Text('${widget.order?.date}')),
       body: BlocBuilder<ProductsBloc, CrudState<Product>>(
         bloc: _bloc,
         builder: (context, state) {
@@ -60,9 +61,15 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     return ListView.builder(
       itemCount: widget.order?.items.length ?? 0,
       itemBuilder: (_, index) {
-        return ListTile(
-          title: Text(products[index].title),
-          trailing: Text(widget.order!.items[index].amount.toString()),
+        return ProductCard(
+          product: products[index],
+          trailing: Text(
+            'x${widget.order!.items[index].amount}',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
         );
       },
     );

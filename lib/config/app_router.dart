@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
+import 'package:flutter_ecommerce_sample/domain/model/product.dart';
 import 'package:flutter_ecommerce_sample/page/order_details_page/order_details_page.dart';
 import 'package:flutter_ecommerce_sample/page/order_history_page/order_history_page.dart';
+import 'package:flutter_ecommerce_sample/page/product_details_page/product_details_page.dart';
 import 'package:flutter_ecommerce_sample/widget/navigation_wrapper.dart';
 
 abstract class AppRouter {
@@ -10,6 +12,7 @@ abstract class AppRouter {
   static const account = '/account';
   static const orderHistory = '/orderHistory';
   static const orderDetails = '/orderDetails';
+  static const productDetails = '/productDetails';
 
   static Route _materialRoute(Widget page) {
     return MaterialPageRoute(builder: (ctx) => page);
@@ -28,6 +31,11 @@ abstract class AppRouter {
       case orderDetails:
         return _materialRoute(
           OrderDetailsPage(order: settings.arguments as Order),
+        );
+      case productDetails:
+        return _materialRoute(
+          // TODO: Create page args class
+          ProductDetailsPage(product: settings.arguments as Product),
         );
     }
   }

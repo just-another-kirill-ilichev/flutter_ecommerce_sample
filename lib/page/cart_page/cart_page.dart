@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/cart_bloc/cart_bloc.dart';
 import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
+import 'package:flutter_ecommerce_sample/widget/cart_buttons.dart';
 import 'package:flutter_ecommerce_sample/widget/product_card.dart';
 
 class CartPage extends StatelessWidget {
@@ -13,9 +14,10 @@ class CartPage extends StatelessWidget {
       builder: (_, state) => CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 200,
+            expandedHeight: 100,
             flexibleSpace: const FlexibleSpaceBar(
-              centerTitle: true,
+              centerTitle: false,
+              titlePadding: EdgeInsets.only(left: 16, bottom: 18),
               title: Text('Корзина', style: TextStyle(color: Colors.black)),
             ),
             actions: [
@@ -25,23 +27,40 @@ class CartPage extends StatelessWidget {
               ),
             ],
           ),
-          // TODO: Fix UI and show this button only if:
-          // 1) User is authenticated
-          // 2) Cart has items
-          SliverToBoxAdapter(
-            child: ElevatedButton(
-              child: Text('Order'),
-              onPressed: () => _onOrderPressed(context),
-            ),
-          ),
           SliverList(
             delegate: SliverChildBuilderDelegate(
-              (_, idx) => ProductCard(product: state.items[idx].product),
+              (_, idx) => ProductCard(
+                product: state.items[idx].product,
+                trailing: CartButtons(product: state.items[idx].product),
+              ),
               childCount: state.items.length,
             ),
-          )
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 128, 16, 8),
+            sliver: SliverToBoxAdapter(
+              child: _buildButton(context),
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildButton(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        textStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 1.25,
+        ),
+      ),
+      child: const Text('ЗАКАЗАТЬ'),
+      onPressed: () => _onOrderPressed(context),
     );
   }
 

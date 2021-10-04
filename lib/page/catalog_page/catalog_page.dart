@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/generic/crud_bloc/crud_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_bloc.dart';
 import 'package:flutter_ecommerce_sample/domain/model/product.dart';
+import 'package:flutter_ecommerce_sample/widget/cart_buttons.dart';
 import 'package:flutter_ecommerce_sample/widget/product_card.dart';
 
 class CatalogPage extends StatelessWidget {
@@ -42,7 +43,10 @@ class CatalogPage extends StatelessWidget {
   Widget _buildList(DataLoadSuccess<Product> state) {
     return SliverList(
       delegate: SliverChildBuilderDelegate(
-        (_, index) => ProductCard(product: state.data[index]),
+        (_, index) => ProductCard(
+          product: state.data[index],
+          trailing: CartButtons(product: state.data[index]),
+        ),
         childCount: state.data.length,
       ),
     );
