@@ -5,8 +5,10 @@ import 'package:flutter_ecommerce_sample/bloc/generic/crud_bloc/data_filter.dart
 import 'package:flutter_ecommerce_sample/bloc/products_bloc/products_bloc.dart';
 import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
 import 'package:flutter_ecommerce_sample/domain/model/product.dart';
+import 'package:flutter_ecommerce_sample/domain/service/intl_service.dart';
 import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
 import 'package:flutter_ecommerce_sample/widget/product_card.dart';
+import 'package:intl/intl.dart';
 
 class OrderDetailsPage extends StatefulWidget {
   final Order? order;
@@ -37,7 +39,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.order?.date}')),
+      appBar: AppBar(title: _buildTitle(context)),
       body: BlocBuilder<ProductsBloc, CrudState<Product>>(
         bloc: _bloc,
         builder: (context, state) {
@@ -50,6 +52,28 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           return _buildLoading();
         },
       ),
+    );
+  }
+
+  Widget _buildTitle(BuildContext context) {
+    if (widget.order?.date == null) {
+      return const SizedBox();
+    }
+
+    var service = RepositoryProvider.of<ServiceProvider>(context);
+
+    return FutureBuilder<IntlService>(
+      future: service.intlService,
+      builder: (_, snapshot) {
+        if (!snapshot.hasData) {
+          return const SizedBox();
+        }
+
+        var text =
+            snapshot.data!.defaultDateFormatter.format(widget.order!.date);
+
+        return Text(text);
+      },
     );
   }
 

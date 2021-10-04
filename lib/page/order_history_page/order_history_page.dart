@@ -4,6 +4,8 @@ import 'package:flutter_ecommerce_sample/bloc/generic/crud_bloc/crud_bloc.dart';
 import 'package:flutter_ecommerce_sample/bloc/orders_bloc/orders_bloc.dart';
 import 'package:flutter_ecommerce_sample/config/app_router.dart';
 import 'package:flutter_ecommerce_sample/domain/model/order/order.dart';
+import 'package:flutter_ecommerce_sample/domain/service/intl_service.dart';
+import 'package:flutter_ecommerce_sample/domain/service/service_provider.dart';
 
 class OrderHistoryPage extends StatelessWidget {
   const OrderHistoryPage({Key? key}) : super(key: key);
@@ -21,7 +23,7 @@ class OrderHistoryPage extends StatelessWidget {
             var item = (state as DataLoadSuccess<Order>).data[index];
 
             return ListTile(
-              title: Text(item.date.toString()),
+              title: _buildTitle(context, item),
               subtitle: Text(item.status.stringValue),
               onTap: () => Navigator.pushNamed(
                 context,
@@ -33,5 +35,22 @@ class OrderHistoryPage extends StatelessWidget {
         ),
       );
     });
+  }
+
+  Widget _buildTitle(BuildContext context, Order order) {
+    var service = RepositoryProvider.of<ServiceProvider>(context);
+
+    return FutureBuilder<IntlService>(
+      future: service.intlService,
+      builder: (_, snapshot) {
+        if (!snapshot.hasData) {
+          return const SizedBox();
+        }
+
+        var text = snapshot.data!.defaultDateFormatter.format(order.date);
+
+        return Text(text);
+      },
+    );
   }
 }
